@@ -5,12 +5,12 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
 });
 
-const sendEmail = (to: string, subject: string, text: string): Promise<string> => {
+const sendEmail = async (to: string, subject: string, text: string): Promise<{ success: boolean, result?: SentMessageInfo, error?: Error }> => {
   const mailOptions: SendMailOptions = {
     from: 'tinius.lono@hotmail.com',
     to,
@@ -18,15 +18,12 @@ const sendEmail = (to: string, subject: string, text: string): Promise<string> =
     text
   };
 
-  return new Promise((resolve, reject) => {
-    transporter.sendMail(mailOptions, (error: Error | null, info: SentMessageInfo) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(info.response);
-      }
-    });
-  });
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    return { success: true, result: info };
+  } catch (error) {
+    return { success: false, error: error as Error };
+  }
 };
 
 export default sendEmail;
