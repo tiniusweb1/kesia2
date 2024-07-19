@@ -1,22 +1,17 @@
 import React from 'react'
-require('dotenv').config();
-import ContactForm from '../components/Contactform';
+import ContactForm from '../components/ContactForm'
 
-const HomePage: React.FC = () => {
-    // Example of using format inside a useEffect or another function if needed
-    // React.useEffect(() => {
-    //     const options = {}; // Define your options here
-    //     const formatted = format(options);
-    //     console.log(formatted);
-    // }, []);
-
+const HomePage = () => {
     return (
         <div>
-            <h1>Welcome to My Website!</h1>
-            <p>This is the home page.</p>
+            <h1>Welcome to Next.js!</h1>
             <ContactForm />
         </div>
     )
 }
+
+;<div>
+    <h1>Welcome to Next.js!</h1>
+</div>
 
 export default HomePage

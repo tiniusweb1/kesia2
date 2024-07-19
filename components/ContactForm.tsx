@@ -1,65 +1,90 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
-import sendEmail from '../services/emailservice';
-import { AxiosError } from 'axios';
-
-interface FormData {
-    name: string;
-    phone: string;
-    subject: string;
-    email: string;
-    message: string;
-}
+import React, { useState } from 'react';
 
 const ContactForm = () => {
-    const [formData, setFormData] = useState<FormData>({
-        name: '',
-        phone: '',
-        subject: '',
-        email: '',
-        message: ''
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
+
+  const handleChange = (e: { target: { name: any; value: any; }; }) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
     });
+  };
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData(prevFormData => ({
-            ...prevFormData,
-            [name]: value
-        }));
-    };
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
+    e.preventDefault(); // Prevent default form submission behavior
 
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    try {
+      const response = await fetch('/api/emailservice', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
-        // Validate form data
-        if (!formData.email || !formData.subject || !formData.message) {
-            console.error('All fields are required.');
-            // Update component's state here to display an error message if needed
-            return; // Stop the function if validation fails
-        }
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Submission successful', data);
+        // Handle success (e.g., showing a success message)
+      } else {
+        console.error('Submission failed', response);
+        // Handle error (e.g., showing an error message)
+      }
+    } catch (error) {
+      console.error('Submission error', error);
+      // Handle error (e.g., showing an error message)
+    }
+  };
 
-        try {
-            const response = await sendEmail(formData.email, formData.subject, formData.message);
-            console.log('Email sent successfully!', response);
-        } catch (error: AxiosError | any) {
-            console.error('There was an error sending the email!', error);
-            // Handle error here, possibly updating state to show an error message
-        }
-    };
+  return (
+    <form onSubmit={handleSubmit}>
+      <label htmlFor="name">Name:</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        value={formData.name}
+        onChange={handleChange}
+        required
+      />
 
-    return (
-        <form onSubmit={handleSubmit}>
-            <div className="form-row">
-                <input type="text" name="name" placeholder="Navn" value={formData.name} onChange={handleChange} required />
-                <input type="text" name="phone" placeholder="Telefon" value={formData.phone} onChange={handleChange} required />
-            </div>
-            <div className="form-row">
-                <input type="text" name="subject" placeholder="Subjekt" value={formData.subject} onChange={handleChange} required />
-                <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
-            </div>
-            <textarea name="message" placeholder="Din melding" value={formData.message} onChange={handleChange} required></textarea>
-            <button type="submit">Send</button>
-        </form>
-    );
-};
+      <label htmlFor="email">Email:</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        value={formData.email}
+        onChange={handleChange}
+        required
+      />
+
+      <label htmlFor="subject">Subject:</label>
+      <input
+        type="text"
+        id="subject"
+        name="subject"
+        value={formData.subject}
+        onChange={handleChange}
+      />
+
+      <label htmlFor="message">Message:</label>
+      <textarea
+        id="message"
+        name="message"
+        value={formData.message}
+        onChange={handleChange}
+        required
+      ></textarea>
+
+      <button type="submit">Send Email</button>
+    </form>
+  );
+}
 
 export default ContactForm;
