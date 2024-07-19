@@ -1,5 +1,6 @@
 import React from 'react'
-// Import the format function from the utils file
+require('dotenv').config();
+import ContactForm from '../components/Contactform';
 
 const HomePage: React.FC = () => {
     // Example of using format inside a useEffect or another function if needed
@@ -13,6 +14,7 @@ const HomePage: React.FC = () => {
         <div>
             <h1>Welcome to My Website!</h1>
             <p>This is the home page.</p>
+            <ContactForm />
         </div>
     )
 }
