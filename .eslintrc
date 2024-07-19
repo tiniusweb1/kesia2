@@ -1,10 +1,10 @@
-
 {
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "prettier", // Replace "prettier" with "prettier-eslint"
-    "plugin:prettier/recommended" 
+    "plugin:prettier/recommended", // Keeps Prettier integration
+    "plugin:@next/next/recommended", // Previously included Next.js rules
+    "next" // Extends eslint-config-next last as recommended
   ],
   "root": true,
   "parser": "@typescript-eslint/parser",
@@ -14,6 +14,5 @@
   "plugins": [
     "@typescript-eslint",
     "prettier"
-
   ]
 }
