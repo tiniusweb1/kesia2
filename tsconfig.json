@@ -12,6 +12,11 @@
         "isolatedModules": true
     },
     "extends": "./node_modules/@tsconfig/recommended/tsconfig.json",
-    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+    "include": [
+        "next-env.d.ts",
+        "**/*.ts",
+        "**/*.tsx",
+        "types/**/*.d.ts" // Include this line to explicitly include your declarations.d.ts file
+    ],
     "exclude": ["node_modules"]
 }
