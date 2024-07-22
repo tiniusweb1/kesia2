@@ -1,19 +1,41 @@
 .container {
-    /* Add your styles here */
+    position: relative;
+    width: 100%;
+    height: auto;
 }
 
 .textWrapper {
-    /* Add your styles here */
+    position: relative;
+    width: 100%;
+    height: auto;
+}
+
+.omHeading {
+    font-size: 24px;
+    margin-bottom: 16px;
 }
 
 .textContainer {
     height: 100px; /* Initial height */
     overflow: hidden;
     transition: height 0.5s ease-out;
+
+    &.expanded {
+        height: auto; /* Expand to full height */
+    }
+
+    &.collapsed {
+        height: 100px; /* Collapse to initial height */
+    }
+}
+
+.paragraph2 {
+    font-size: 16px;
+    line-height: 1.5;
 }
 
 .button {
     cursor: pointer;
-    margin-top: 10px;
-    /* Add other styles as needed */
+    color: blue;
+    margin-top: 8px;
 }

@@ -1,13 +1,13 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-import nodemailer, { SendMailOptions, SentMessageInfo } from 'nodemailer'
+import type { NextApiRequest, NextApiResponse } from 'next';
+import nodemailer, { SendMailOptions, SentMessageInfo } from 'nodemailer';
 
 // Define the type for your form data
 type MyFormData = {
-    name: string
-    email: string
-    subject?: string
-    message: string
-}
+    name: string;
+    email: string;
+    subject?: string;
+    message: string;
+};
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.office365.com', // Or use 'gmail' or other services as needed
@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER, // Your email
         pass: process.env.EMAIL_PASS, // Your email password
     },
-})
+});
 
 const sendEmail = async (
     formData: MyFormData
@@ -28,47 +28,43 @@ const sendEmail = async (
         subject: formData.subject || 'New Contact Form Submission', // Subject line
         text: `You have a new contact form submission from ${formData.name}. Email: ${formData.email}. Message: ${formData.message}`, // Plain text body
         // html: "<p>HTML version of the message</p>" // HTML body (optional)
-    }
+    };
 
     try {
-        const result = await transporter.sendMail(mailOptions)
-        return { success: true, result }
+        const result = await transporter.sendMail(mailOptions);
+        return { success: true, result };
     } catch (error) {
-        console.error('Failed to send email:', error)
-        return { success: false, error: error as Error }
+        console.error('Failed to send email:', error);
+        return { success: false, error: error as Error };
     }
-}
+};
 
 const handleEmailRequest = async (
     req: NextApiRequest,
     res: NextApiResponse
 ) => {
     if (req.method === 'POST') {
-        const formData: MyFormData = req.body
-        const { success, result, error } = await sendEmail(formData)
+        const formData: MyFormData = req.body;
+        const { success, result, error } = await sendEmail(formData);
 
         if (success) {
-            console.log('Email sent: ', result)
+            console.log('Email sent: ', result);
             res.status(200).json({
                 message: 'Email sent successfully',
                 info: result,
-            })
+            });
         } else {
-            console.error('Failed to send email:', error)
+            console.error('Failed to send email:', error);
             res.status(500).json({
                 error: 'Failed to send email',
                 details: error?.message,
-            })
+            });
         }
     } else {
         // Handle any non-POST requests
-        res.setHeader('Allow', ['POST'])
-        res.status(405).end(`Method ${req.method} Not Allowed`)
+        res.setHeader('Allow', ['POST']);
+        res.status(405).end(`Method ${req.method} Not Allowed`);
     }
-}
+};
 
-export default handleEmailRequest
-// This code defines an API route that sends an email using the nodemailer library.
-// The route expects a POST request with a JSON payload containing the form data
-// (name, email, subject, and message). It then sends an email to the specified recipient
-//  using the nodemailer transporter created with the provided email credentials.
+export default handleEmailRequest;
