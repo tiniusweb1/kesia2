@@ -2,9 +2,11 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended", // Keeps Prettier integration
-    "plugin:@next/next/recommended", // Previously included Next.js rules
-    "next" // Extends eslint-config-next last as recommended
+    "plugin:prettier/recommended",
+    "plugin:@next/next/recommended",
+    "next",
+    "plugin:import/errors",
+    "plugin:import/warnings"
   ],
   "root": true,
   "parser": "@typescript-eslint/parser",
@@ -13,6 +15,18 @@
   },
   "plugins": [
     "@typescript-eslint",
-    "prettier"
-  ]
+    "prettier",
+    "import"
+  ],
+  "rules": {
+    "prettier/prettier": ["error", { "singleQuote": true, "semi": false }],
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "import/order": [
+      "error",
+      {
+        "groups": ["builtin", "external", "internal"],
+        "newlines-between": "always"
+      }
+    ]
+  }
 }

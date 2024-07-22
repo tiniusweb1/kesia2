@@ -1,22 +1,32 @@
 {
-    "compilerOptions": {
-        "jsx": "preserve",
-        "module": "esnext", // Allows top-level await
-        "target": "es2017", // Ensures compatibility with es2017 or higher
-        "lib": ["dom", "dom.iterable", "esnext"],
-        "allowJs": true,
-        "noEmit": true,
-        "incremental": true,
-        "moduleResolution": "node",
-        "resolveJsonModule": true,
-        "isolatedModules": true
-    },
-    "extends": "./node_modules/@tsconfig/recommended/tsconfig.json",
-    "include": [
-        "next-env.d.ts",
-        "**/*.ts",
-        "**/*.tsx",
-        "types/**/*.d.ts" // Include this line to explicitly include your declarations.d.ts file
+  "compilerOptions": {
+    "jsx": "preserve",
+    "module": "esnext",
+    "target": "es2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
     ],
-    "exclude": ["node_modules"]
+    "allowJs": true,
+    "noEmit": true,
+    "incremental": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true
+  },
+  "extends": "./node_modules/@tsconfig/recommended/tsconfig.json",
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "types/**/*.d.ts",
+    "components/carousel/LazyImage.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
