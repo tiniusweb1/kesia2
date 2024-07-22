@@ -6,7 +6,7 @@ import useImageLoader from '../hooks/useImageLoader'
 import useInterval from '../hooks/useInterval'
 import styles from './carousel.module.scss'
 import { ImageError } from '../../src/types'
-import ImageErrorDisplay from './ImageErrorDisplay' // Correct import path
+import ImageErrorDisplay from './ImageErrorDisplay'
 
 interface CarouselProps {
     criticalImages: string[]
@@ -55,14 +55,21 @@ const Carousel: React.FC<CarouselProps> = ({ criticalImages }) => {
                     </ul>
                 </div>
             )}
-            {images.length > 0 && images[index].status === 'fulfilled' && (
-                <Image
-                    src={images[index].value || ''}
-                    alt={`Carousel image ${index + 1} of ${images.length}`}
-                    layout="fill"
-                    onLoad={handleImageLoad}
-                    priority={index < criticalImages.length}
-                />
+            {images.length > 0 && (
+                <div className={styles.imageWrapper}>
+                    <Image
+                        src={
+                            images[index].status === 'rejected'
+                                ? '/images/placeholder.webp'
+                                : images[index].value
+                        }
+                        alt={`Carousel image ${index + 1} of ${images.length}`}
+                        fill
+                        onLoad={handleImageLoad}
+                        priority={index < criticalImages.length}
+                        className={`${styles.image} ${images[index].status === 'rejected' ? styles.hidden : styles.visible}`}
+                    />
+                </div>
             )}
         </div>
     )

@@ -1,6 +1,6 @@
+// components/hooks/useImageLoader.ts
 import { useState, useEffect, useCallback, useRef } from 'react'
-
-import { getImages, importImage } from '../../components/carousel/pics'
+import { getImages, importImage, getPlaceholderImages } from '../carousel/pics'
 import { ImageResult, ImageError, ErrorReason } from '../../src/types'
 
 const useImageLoader = (criticalImages: string[]) => {
@@ -19,17 +19,7 @@ const useImageLoader = (criticalImages: string[]) => {
         if (retryCount.current >= 5) {
             setState((prevState) => ({
                 ...prevState,
-                images: [
-                    ...prevState.images,
-                    {
-                        status: 'rejected',
-                        reason: {
-                            name: 'ImageLoadingError',
-                            message:
-                                'Failed to load images after multiple attempts.',
-                        } as ImageError,
-                    },
-                ],
+                images: getPlaceholderImages(),
                 loading: false,
             }))
             return
@@ -43,21 +33,7 @@ const useImageLoader = (criticalImages: string[]) => {
 
             const imageResults: ImageResult[] = results.map((result) => {
                 if (result.status === 'fulfilled') {
-                    if (typeof result.value === 'string') {
-                        return {
-                            status: 'fulfilled',
-                            value: result.value,
-                        }
-                    } else {
-                        return {
-                            status: 'rejected',
-                            reason: {
-                                name: 'UnexpectedValueTypeError',
-                                message: 'Unexpected value type',
-                                code: 'UNEXPECTED_TYPE',
-                            } as ImageError,
-                        }
-                    }
+                    return result.value
                 } else {
                     const reason = result.reason as Error & Partial<ErrorReason>
                     return {

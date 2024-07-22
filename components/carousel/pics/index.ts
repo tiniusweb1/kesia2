@@ -17,28 +17,20 @@ export const getImages = (
 ): Promise<string[]> => Promise.resolve(imageList)
 
 /**
- * Dynamically imports an image and returns its URL.
- * Validates that the imported module's structure is as expected.
- * @param image - The filename of the image to import.
+ * Resolves an image path and returns its URL.
+ * @param image - The filename of the image.
  * @returns A promise that resolves to an ImageResult.
  */
 export const importImage = async (image: string): Promise<ImageResult> => {
     try {
-        const importedModule = await import(`../../../public${image}`)
-        const imageUrl = importedModule.src || importedModule.default
+        // Directly use the image path as it's served statically from public folder
+        const imageUrl = image
 
-        // Ensure the imported value is a string
         if (typeof imageUrl !== 'string') {
             console.error(
                 `Unexpected value type for ${image}: ${typeof imageUrl}`
             )
             throw new Error('Unexpected value type')
-        }
-
-        // Additional check to ensure it's a valid URL
-        if (!isValidUrl(imageUrl)) {
-            console.error(`Invalid URL for ${image}: ${imageUrl}`)
-            throw new Error('Invalid URL format')
         }
 
         return { status: 'fulfilled', value: imageUrl }
@@ -49,15 +41,14 @@ export const importImage = async (image: string): Promise<ImageResult> => {
 }
 
 /**
- * Validates if the given string is a valid URL.
- * @param url - The string to validate.
- * @returns True if the string is a valid URL, otherwise false.
+ * Returns a list of placeholder images.
+ * @returns An array of ImageResult representing placeholder images.
  */
-const isValidUrl = (url: string): boolean => {
-    try {
-        new URL(url)
-        return true
-    } catch {
-        return false
-    }
+export const getPlaceholderImages = (): ImageResult[] => {
+    return [
+        { status: 'fulfilled', value: '/images/placeholder1.webp' },
+        { status: 'fulfilled', value: '/images/placeholder2.webp' },
+        { status: 'fulfilled', value: '/images/placeholder3.webp' },
+        { status: 'fulfilled', value: '/images/placeholder4.webp' },
+    ]
 }

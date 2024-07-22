@@ -3,7 +3,7 @@
 .container {
     position: relative;
     width: 100%;
-    height: 100%;
+    height: 500px; /* Ensure the container has a set height */
 }
 
 .imageWrapper {
@@ -32,6 +32,10 @@
 
 .hidden {
     opacity: 0;
+}
+
+.image {
+    object-fit: cover; /* Ensure the image covers the container */
 }
 
 .imageWrapper img {
