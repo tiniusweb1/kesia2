@@ -1,34 +1,36 @@
 {
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
-    "plugin:@next/next/recommended",
-    "next",
-    "plugin:import/errors",
-    "plugin:import/warnings"
-  ],
-  "root": true,
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "project": "./tsconfig.json",
-    "ecmaVersion": 2020,
-    "sourceType": "module"
-  },
-  "plugins": [
-    "@typescript-eslint",
-    "prettier",
-    "import"
-  ],
-  "rules": {
-    "prettier/prettier": ["error", { "singleQuote": true, "semi": false }],
-    "@typescript-eslint/explicit-module-boundary-types": "off",
-    "import/order": [
-      "error",
-      {
-        "groups": ["builtin", "external", "internal"],
-        "newlines-between": "always"
-      }
-    ]
-  }
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:prettier/recommended",
+        "plugin:@next/next/recommended",
+        "next",
+        "plugin:import/errors",
+        "plugin:import/warnings"
+    ],
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "project": "./tsconfig.json",
+        "ecmaVersion": 2020,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "@typescript-eslint",
+        "prettier",
+        "import"
+    ],
+    "rules": {
+        "prettier/prettier": ["error", { "singleQuote": true, "semi": false }],
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "import/order": [
+            "error",
+            {
+                "groups": ["builtin", "external", "internal"],
+                "newlines-between": "always"
+            }
+        ],
+        "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
+    },
+    "ignorePatterns": ["next.config.js"]
 }

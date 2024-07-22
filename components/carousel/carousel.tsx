@@ -1,6 +1,7 @@
 import React, { useState, useEffect, memo } from 'react'
 import Image from 'next/image'
 import { useInView } from 'react-intersection-observer'
+
 import useImageLoader from '../hooks/useImageLoader'
 import useInterval from '../hooks/useInterval'
 import styles from './carousel.module.scss'
@@ -15,25 +16,26 @@ interface CarouselProps {
 
 interface ErrorDisplayProps {
     reloadImages: () => void
-    errors: { status: 'rejected'; reason: any }[]
+    errors: { status: 'rejected'; reason: Error }[]
 }
 
-const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
-    reloadImages,
-    errors,
-}) => (
-    <div role="alert">
-        <p>Some images could not be loaded. Please try again later.</p>
-        <button onClick={reloadImages}>Retry</button>
-        <ul>
-            {errors.map((error, idx) => (
-                <li key={idx}>
-                    <ImageErrorDisplay error={error.reason} />
-                </li>
-            ))}
-        </ul>
-    </div>
+const ErrorDisplay: React.FC<ErrorDisplayProps> = memo(
+    ({ reloadImages, errors }) => (
+        <div role="alert">
+            <p>Some images could not be loaded. Please try again later.</p>
+            <button onClick={reloadImages}>Retry</button>
+            <ul>
+                {errors.map((error, idx) => (
+                    <li key={idx}>
+                        <ImageErrorDisplay error={error.reason} />
+                    </li>
+                ))}
+            </ul>
+        </div>
+    )
 )
+
+ErrorDisplay.displayName = 'ErrorDisplay'
 
 const Carousel: React.FC<CarouselProps> = ({ criticalImages }) => {
     const { images, loading, reloadImages } = useImageLoader(criticalImages)
@@ -54,7 +56,7 @@ const Carousel: React.FC<CarouselProps> = ({ criticalImages }) => {
 
     const errors = images.filter((image) => image.status === 'rejected') as {
         status: 'rejected'
-        reason: any
+        reason: Error
     }[]
 
     return (

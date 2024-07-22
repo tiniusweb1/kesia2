@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react'
 
 const ContactForm: React.FC = () => {
     const [formData, setFormData] = useState({
@@ -6,19 +6,21 @@ const ContactForm: React.FC = () => {
         email: '',
         subject: '',
         message: '',
-    });
-    const [message, setMessage] = useState<string | null>(null); // State for success/error messages
+    })
+    const [message, setMessage] = useState<string | null>(null) // State for success/error messages
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+        const { name, value } = e.target
         setFormData({
             ...formData,
             [name]: value,
-        });
-    };
+        })
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault(); // Prevent default form submission behavior
+        e.preventDefault() // Prevent default form submission behavior
 
         try {
             const response = await fetch('/api/emailservice', {
@@ -27,36 +29,36 @@ const ContactForm: React.FC = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(formData),
-            });
+            })
 
             if (response.ok) {
-                const data = await response.json();
-                console.log('Submission successful', data);
-                setMessage('Email sent successfully!'); // Set success message
+                const data = await response.json()
+                console.log('Submission successful', data)
+                setMessage('Email sent successfully!') // Set success message
 
                 // Clear the message after 4 seconds
                 setTimeout(() => {
-                    setMessage(null);
-                }, 4000);
+                    setMessage(null)
+                }, 4000)
             } else {
-                console.error('Submission failed', response);
-                setMessage('Failed to send email. Please try again later.'); // Set error message
+                console.error('Submission failed', response)
+                setMessage('Failed to send email. Please try again later.') // Set error message
 
                 // Clear the message after 4 seconds
                 setTimeout(() => {
-                    setMessage(null);
-                }, 4000);
+                    setMessage(null)
+                }, 4000)
             }
         } catch (error) {
-            console.error('Submission error', error);
-            setMessage('An error occurred. Please try again later.'); // Set error message
+            console.error('Submission error', error)
+            setMessage('An error occurred. Please try again later.') // Set error message
 
             // Clear the message after 4 seconds
             setTimeout(() => {
-                setMessage(null);
-            }, 4000);
+                setMessage(null)
+            }, 4000)
         }
-    };
+    }
 
     return (
         <div>
@@ -101,10 +103,9 @@ const ContactForm: React.FC = () => {
 
                 <button type="submit">Send Email</button>
             </form>
-
             {message && <p>{message}</p>} {/* Display success/error message */}
         </div>
-    );
-};
+    )
+}
 
-export default ContactForm;
+export default ContactForm
