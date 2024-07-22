@@ -1,3 +1,4 @@
+// components/carousel/carousel.tsx
 import React, { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { useInView } from 'react-intersection-observer'
@@ -60,14 +61,18 @@ const Carousel: React.FC<CarouselProps> = ({ criticalImages }) => {
                     <Image
                         src={
                             images[index].status === 'rejected'
-                                ? '/images/placeholder.webp'
+                                ? ''
                                 : images[index].value
                         }
                         alt={`Carousel image ${index + 1} of ${images.length}`}
                         fill
                         onLoad={handleImageLoad}
                         priority={index < criticalImages.length}
-                        className={`${styles.image} ${images[index].status === 'rejected' ? styles.hidden : styles.visible}`}
+                        className={
+                            images[index].status === 'rejected'
+                                ? ''
+                                : styles.image
+                        }
                     />
                 </div>
             )}

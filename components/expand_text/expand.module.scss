@@ -1,102 +1,19 @@
-// Define variables
-$font-stack:
-    Arial,
-    Helvetica Neue,
-    Helvetica,
-    sans-serif;
-$border-color: #000;
-
-// Mixin for resetting margins and paddings
-@mixin no-vertical-margin-padding {
-    margin-top: 0;
-    margin-bottom: 0;
-    padding-top: 0;
-    padding-bottom: 0;
+.container {
+    /* Add your styles here */
 }
 
-// Styles start here
-.om-heading {
-    order: 0;
-    align-self: auto;
-    margin-left: 6px;
-    font-size: 32px;
-    font-weight: 400;
-    display: block;
+.textWrapper {
+    /* Add your styles here */
 }
 
-.heading-2,
-.heading-3 {
-    text-align: center;
-    border-radius: 0;
-}
-
-.paragraph {
-    grid-column-gap: 0px;
-    grid-row-gap: 0px;
-    overflow-wrap: normal;
-    flex-flow: row;
-    justify-content: flex-start;
-    width: 100%;
-    height: auto;
-    max-height: 100%;
-    margin-bottom: 11px;
-    font-family: $font-stack;
-    font-weight: 400;
-    display: flex;
+.textContainer {
+    height: 100px; /* Initial height */
     overflow: hidden;
+    transition: height 0.5s ease-out;
 }
 
-.text-wrapper {
-    height: 100%;
-    margin-bottom: 47px;
-    display: block;
-    position: static;
-    overflow: hidden;
-}
-
-.text-container {
-    height: 100%; // Corrected height value
-    display: block;
-}
-
-.button-container {
-    @include no-vertical-margin-padding;
-    clear: none;
-    grid-column-gap: 30px;
-    grid-row-gap: 30px;
-    text-align: left;
-    border-radius: 0;
-    flex-flow: column;
-    order: 1;
-    margin-right: 0;
-    display: flex;
-    position: static;
-    top: 0;
-    right: 26px;
-
-    .button {
-        text-align: right;
-        margin-right: 24px;
-        @include no-vertical-margin-padding;
-        display: block;
-    }
-}
-
-.paragraph-2 {
-    @include no-vertical-margin-padding;
-    aspect-ratio: auto;
-    text-align: left;
-    white-space: pre-wrap;
-    word-break: normal;
-    overflow-wrap: anywhere;
-    object-fit: fill;
-    border: 1px solid $border-color; // Use variable
-    border-radius: 0;
-    flex-flow: column;
-    height: 100%;
-    margin-left: 8px;
-    margin-right: 16px;
-    display: flex;
-    position: static;
-    overflow: hidden;
+.button {
+    cursor: pointer;
+    margin-top: 10px;
+    /* Add other styles as needed */
 }

@@ -1,22 +1,25 @@
-// expandCollapse.ts
-export const initExpandCollapse = () => {
-    document.addEventListener('DOMContentLoaded', function () {
-        const wrapper = document.querySelector('.textContainer') as HTMLElement
-        const button = document.querySelector('.button') as HTMLElement
-        const initialHeight = '100px' // Set this to your initial height
-        const expandedHeight = wrapper.scrollHeight + 'px' // Automatically calculates full height
+export const initExpandCollapse = (classNames: { textContainer: string, button: string }) => {
+    if (typeof document !== 'undefined') {
+        const wrappers = document.querySelectorAll(`.${classNames.textContainer}`) as NodeListOf<HTMLElement>;
+        const buttons = document.querySelectorAll(`.${classNames.button}`) as NodeListOf<HTMLElement>;
+        const initialHeight = '100px'; // Set this to your initial height
 
-        // Set initial height
-        wrapper.style.height = initialHeight
+        wrappers.forEach((wrapper, index) => {
+            const button = buttons[index];
+            if (wrapper) {
+                const expandedHeight = wrapper.scrollHeight + 'px'; // Automatically calculates full height
 
-        button.addEventListener('click', function () {
-            if (wrapper.style.height === initialHeight) {
-                wrapper.style.height = expandedHeight
-                button.innerHTML = '> se mindre' // Change button text to "see less"
-            } else {
-                wrapper.style.height = initialHeight
-                button.innerHTML = '> se mer' // Change button text back to "see more"
+                // Set initial height
+                wrapper.style.height = initialHeight;
+
+                if (button) {
+                    button.addEventListener('click', () => {
+                        const isExpanded = wrapper.style.height !== initialHeight;
+                        wrapper.style.height = isExpanded ? initialHeight : expandedHeight;
+                        button.innerHTML = isExpanded ? '&gt; se mer' : '&gt; se mindre'; // Toggle button text
+                    });
+                }
             }
-        })
-    })
-}
+        });
+    }
+};
