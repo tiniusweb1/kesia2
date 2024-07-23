@@ -1,54 +1,26 @@
-// components/carousel/pics/index.ts
-import { ImageResult, ImageError } from '../../../src/types'
+export type ImageResult =
+    | { status: 'fulfilled'; value: string }
+    | { status: 'rejected'; reason: Error }
 
-/**
- * Retrieves a list of image filenames.
- * Uses a default list if no list is provided.
- * @param imageList - An optional array of image filenames.
- * @returns A promise that resolves to an array of image filenames.
- */
-export const getImages = (
-    imageList: string[] = [
-        '/images/img1.png',
-        '/images/img2.png',
-        '/images/img3.png',
-        '/images/img4.png',
-    ]
-): Promise<string[]> => Promise.resolve(imageList)
+// Exporting a function that returns a Promise resolving to an array of strings
+export const getImages = (imageList?: string[]): Promise<string[]> => {
+    // Allow passing a custom image list, defaulting to a hardcoded list
+    const images = imageList || ['img1.png', 'img2.png', 'img3.png', 'img4.png']
+    return Promise.resolve(images)
+}
 
-/**
- * Resolves an image path and returns its URL.
- * @param image - The filename of the image.
- * @returns A promise that resolves to an ImageResult.
- */
-export const importImage = async (image: string): Promise<ImageResult> => {
+const importImage = async (image: string): Promise<ImageResult> => {
     try {
-        // Directly use the image path as it's served statically from public folder
-        const imageUrl = image
-
-        if (typeof imageUrl !== 'string') {
-            console.error(
-                `Unexpected value type for ${image}: ${typeof imageUrl}`
-            )
-            throw new Error('Unexpected value type')
-        }
-
-        return { status: 'fulfilled', value: imageUrl }
+        const importedModule = await import(`./${image}`)
+        return { status: 'fulfilled', value: importedModule.default }
     } catch (error) {
         console.error(`Failed to import ${image}`, error)
-        return { status: 'rejected', reason: error as ImageError }
+        return { status: 'rejected', reason: error as Error }
     }
 }
 
-/**
- * Returns a list of placeholder images.
- * @returns An array of ImageResult representing placeholder images.
- */
-export const getPlaceholderImages = (): ImageResult[] => {
-    return [
-        { status: 'fulfilled', value: '/images/placeholder1.webp' },
-        { status: 'fulfilled', value: '/images/placeholder2.webp' },
-        { status: 'fulfilled', value: '/images/placeholder3.webp' },
-        { status: 'fulfilled', value: '/images/placeholder4.webp' },
-    ]
-}
+const importedImages = getImages().then((images) =>
+    Promise.allSettled(images.map((image) => importImage(image)))
+)
+
+export default importedImages

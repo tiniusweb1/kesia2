@@ -1,63 +1,82 @@
+// components/carousel/Carousel.tsx
 import React, { useState, useEffect, memo } from 'react'
-import Image from 'next/image'
+import Slider from 'react-slick'
 import { useInView } from 'react-intersection-observer'
+import Image from 'next/image'
 
+import useViewport from '../hooks/useViewport'
 import useImageLoader from '../hooks/useImageLoader'
 import useInterval from '../hooks/useInterval'
 import styles from './carousel.module.scss'
-import ImageErrorDisplay from './ImageErrorDisplay'
+import { Image as ImageType } from '../../src/types'
+import getSlickSettings from '../../src/config/slickSettings'
 
-const AUTO_SCROLL_INTERVAL = 3000 // Define magic number as constant
-const VIEW_ROOT_MARGIN = '50px' // Define rootMargin as constant for clarity
+const AUTO_SCROLL_INTERVAL = 3000
+const VIEW_ROOT_MARGIN = '50px'
 
 interface CarouselProps {
-    criticalImages: string[]
+    criticalImages: ImageType[]
+    images: ImageType[]
 }
 
 interface ErrorDisplayProps {
     reloadImages: () => void
-    errors: { status: 'rejected'; reason: Error }[]
+    errors: { status: 'rejected'; reason: { message: string } }[]
 }
 
-const ErrorDisplay: React.FC<ErrorDisplayProps> = memo(
-    ({ reloadImages, errors }) => (
-        <div role="alert">
-            <p>Some images could not be loaded. Please try again later.</p>
-            <button onClick={reloadImages}>Retry</button>
-            <ul>
-                {errors.map((error, idx) => (
-                    <li key={idx}>
-                        <ImageErrorDisplay error={error.reason} />
-                    </li>
-                ))}
-            </ul>
-        </div>
-    )
+const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
+    reloadImages,
+    errors,
+}) => (
+    <div role="alert">
+        <p>Some images could not be loaded. Please try again later.</p>
+        <button onClick={reloadImages}>Retry</button>
+        <ul>
+            {errors.map((error, idx) => (
+                <li key={idx}>{error.reason.message}</li>
+            ))}
+        </ul>
+    </div>
 )
 
-ErrorDisplay.displayName = 'ErrorDisplay'
-
-const Carousel: React.FC<CarouselProps> = ({ criticalImages }) => {
-    const { images, loading, reloadImages } = useImageLoader(criticalImages)
+const Carousel: React.FC<CarouselProps> = ({ criticalImages, images }) => {
+    const { images: loadedImages, loading, reloadImages } = useImageLoader(
+        criticalImages.map((image) => image.url)
+    )
     const [index, setIndex] = useState(0)
     const { ref, inView } = useInView({
         triggerOnce: true,
         rootMargin: VIEW_ROOT_MARGIN,
     })
 
+    const { isMobile } = useViewport()
+
+    const settings = getSlickSettings(isMobile)
+
     const { start, stop } = useInterval(() => {
-        setIndex((current) => (current + 1) % images.length)
+        setIndex((current) => (current + 1) % loadedImages.length)
     }, AUTO_SCROLL_INTERVAL)
 
     useEffect(() => {
-        if (images.length > 0 && inView) start()
+        if (loadedImages.length > 0 && inView) start()
         else stop()
-    }, [images.length, inView, start, stop])
+    }, [loadedImages.length, inView, start, stop])
 
-    const errors = images.filter((image) => image.status === 'rejected') as {
+    const errors = loadedImages.filter((image) => image.status === 'rejected') as {
         status: 'rejected'
-        reason: Error
+        reason: { message: string }
     }[]
+
+    const isImageObject = (
+        value: string | { url: string; id: string }
+    ): value is { url: string; id: string } => {
+        return (
+            typeof value === 'object' &&
+            value !== null &&
+            'url' in value &&
+            'id' in value
+        )
+    }
 
     return (
         <div className={styles.container} ref={ref} aria-live="polite">
@@ -65,24 +84,38 @@ const Carousel: React.FC<CarouselProps> = ({ criticalImages }) => {
             {errors.length > 0 && (
                 <ErrorDisplay reloadImages={reloadImages} errors={errors} />
             )}
-            <div className={styles.carouselTrack}>
-                {images.length > 0 &&
-                    images.map((image, idx) => (
+            <Slider {...settings} className={styles.carouselTrack}>
+                {loadedImages.length > 0 &&
+                    loadedImages.map((image, idx) => (
                         <div
-                            key={idx}
-                            className={`${styles.carouselItem} ${index === idx ? styles.active : ''}`}
+                            key={
+                                image.status === 'fulfilled' &&
+                                isImageObject(image.value)
+                                    ? image.value.id
+                                    : `error-${idx}`
+                            }
+                            className={`${styles.carouselItem} ${
+                                index === idx ? styles.active : ''
+                            }`}
+                            style={{ position: 'relative', height: '300px' }}
                         >
-                            {image.status !== 'rejected' && (
-                                <Image
-                                    src={image.value}
-                                    alt={`Carousel image ${idx + 1} of ${images.length}`}
-                                    layout="fill"
-                                    priority={idx < criticalImages.length}
-                                />
-                            )}
+                            {image.status !== 'rejected' &&
+                                isImageObject(image.value) && (
+                                    <Image
+                                        src={image.value.url}
+                                        alt={`Carousel image ${
+                                            idx + 1
+                                        } of ${loadedImages.length}`}
+                                        fill // Updated from layout="responsive"
+                                        style={{ objectFit: 'cover' }} // Updated from objectFit="cover"
+                                        priority={criticalImages.some(
+                                            img => img.url === (isImageObject(image.value) && image.value.url)
+                                        )}
+                                    />
+                                )}
                         </div>
                     ))}
-            </div>
+            </Slider>
         </div>
     )
 }

@@ -1,158 +1,34 @@
-/* carousel.module.scss */
-
+// carousel.module.scss
 .container {
-    position: relative;
-    width: 100%;
-    height: 500px; /* Ensure the container has a set height */
-}
-
-.imageWrapper {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
-
-.placeholder {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(240, 240, 240, 0.8);
-    z-index: 1;
-    transition: opacity 0.5s ease-in;
-    opacity: 1;
-}
-
-.visible {
-    opacity: 1;
-    transition: opacity 0.5s ease-in;
-}
-
-.hidden {
-    opacity: 0;
-}
-
-.image {
-    object-fit: cover; /* Ensure the image covers the container */
-}
-
-.imageWrapper img {
-    opacity: 0.5; /* Adjust the opacity while loading */
-}
-
-.imageWrapper img.visible {
-    opacity: 1; /* Fully visible when loaded */
-}
-
-.textContainer {
-    height: 100px; /* Initial height for the JS to work correctly */
-    overflow: hidden;
-    transition: height 0.5s ease-out; /* Smooth transition for height change */
-}
-
-.button {
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.omHeading {
-    order: 0;
-    align-self: auto;
-    margin-left: 6px;
-    font-size: 32px;
-    font-weight: 400;
-    display: block;
-}
-
-.heading2 {
-    text-align: center;
-    border-radius: 0;
-}
-
-.heading3 {
-    text-align: center;
-}
-
-.paragraph {
-    grid-column-gap: 0px;
-    grid-row-gap: 0px;
-    overflow-wrap: normal;
-    flex-flow: row;
-    justify-content: flex-start;
-    width: 100%;
-    height: auto;
-    max-height: 100%;
-    margin-bottom: 11px;
-    font-family:
-        Arial,
-        Helvetica Neue,
-        Helvetica,
-        sans-serif;
-    font-weight: 400;
-    display: flex;
-    overflow: hidden;
-}
-
-.textWrapper {
-    height: 100%;
-    margin-bottom: 47px;
-    display: block;
-    position: static;
-    overflow: hidden;
-}
-
-.paragraph2 {
-    aspect-ratio: auto;
-    text-align: left;
-    white-space: pre-wrap;
-    word-break: normal;
-    overflow-wrap: anywhere;
-    object-fit: fill;
-    border: 1px #000;
-    border-radius: 0;
-    flex-flow: column;
-    height: 100%;
-    margin-left: 8px;
-    margin-right: 16px;
-    display: flex;
-    position: static;
-    overflow: hidden;
-}
-
-/* New responsive styles for the carousel */
-
-.carouselTrack {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    transition: transform 0.5s ease-in-out;
+  position: relative;
+  width: 100%;
+  height: auto;
 }
 
 .carouselItem {
-    position: relative;
-    width: 100%;
-    height: 300px;
-    flex: 1 0 100%; // Default to one image per row on small screens
-    transition: transform 0.5s ease-in-out;
-
-    &.active {
-        transform: translateX(0);
-    }
+  position: relative;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-// Adjust layout for larger viewports
-@media (min-width: 768px) {
-    .carouselItem {
-        flex: 1 0 33.33%; // Three images per row
-    }
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: white;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 1;
 }
 
-@media (min-width: 1024px) {
-    .carouselItem {
-        flex: 1 0 33.33%; // Maintain three images per row on larger screens
-    }
+.arrowRight {
+  right: 10px;
+}
+
+.arrowLeft {
+  left: 10px;
 }

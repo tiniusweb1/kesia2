@@ -1,82 +1,46 @@
-// components/hooks/useImageLoader.ts
-import { useState, useEffect, useCallback, useRef } from 'react'
+// hooks/useImageLoader.ts
+import { useState, useEffect } from 'react'
 
-import { getImages, importImage, getPlaceholderImages } from '../carousel/pics'
-import { ImageResult, ImageError, ErrorReason } from '../../src/types'
+import { ImageResult } from '../../src/types'
 
-const useImageLoader = (criticalImages: string[]) => {
-    const [state, setState] = useState<{
-        images: ImageResult[]
-        loading: boolean
-    }>({
-        images: [],
-        loading: true,
-    })
-
-    const retryCount = useRef(0)
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-
-    const loadImages = useCallback(async () => {
-        if (retryCount.current >= 5) {
-            setState((prevState) => ({
-                ...prevState,
-                images: getPlaceholderImages(),
-                loading: false,
-            }))
-            return
-        }
-
-        try {
-            const imageFilenames = await getImages(criticalImages)
-            const results = await Promise.allSettled(
-                imageFilenames.map(importImage)
-            )
-
-            const imageResults: ImageResult[] = results.map((result) => {
-                if (result.status === 'fulfilled') {
-                    return result.value
-                } else {
-                    const reason = result.reason as Error & Partial<ErrorReason>
-                    return {
-                        status: 'rejected',
-                        reason: {
-                            name: reason.name || 'ImageLoadingError',
-                            message: reason.message,
-                            code: reason.code || 'UNKNOWN_ERROR',
-                        } as ImageError,
-                    }
-                }
-            })
-
-            setState({
-                images: imageResults,
-                loading: false,
-            })
-        } catch (error) {
-            console.error('Error loading images:', error)
-            retryCount.current += 1
-            const delay = 1000 * 2 ** retryCount.current
-            timeoutRef.current = setTimeout(loadImages, delay)
-        }
-    }, [criticalImages])
+const useImageLoader = (urls: string[]) => {
+    const [images, setImages] = useState<ImageResult[]>([])
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        loadImages()
-
-        return () => {
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current)
+        const loadImage = async (url: string): Promise<ImageResult> => {
+            try {
+                const response = await fetch(url)
+                if (!response.ok) {
+                    throw new Error('Network response was not ok')
+                }
+                const blob = await response.blob()
+                const imageUrl = URL.createObjectURL(blob)
+                return {
+                    status: 'fulfilled',
+                    value: { url: imageUrl, id: url },
+                }
+            } catch (error) {
+                return {
+                    status: 'rejected',
+                    reason: {
+                        message: (error as Error).message,
+                        name: 'ImageError',
+                    },
+                }
             }
         }
-    }, [loadImages])
 
-    const reloadImages = useCallback(() => {
-        retryCount.current = 0
-        setState({ images: [], loading: true })
+        const loadImages = async () => {
+            const results = await Promise.all(urls.map(loadImage))
+            setImages(results)
+            setLoading(false)
+        }
+
         loadImages()
-    }, [loadImages])
+    }, [urls])
 
-    return { ...state, reloadImages }
+    return { images, loading, reloadImages: () => setLoading(true) }
 }
 
 export default useImageLoader

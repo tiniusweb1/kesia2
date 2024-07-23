@@ -1,4 +1,4 @@
-// useInterval.ts
+// hooks/useInterval.ts
 import { useEffect, useRef, useCallback } from 'react'
 
 const useInterval = (callback: () => void, delay: number) => {

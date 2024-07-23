@@ -1,81 +1,76 @@
-import React, { useEffect, useRef, useState, Suspense } from 'react'
+// components/ImageGallery.tsx
+import React, { useState, Suspense } from 'react'
+import Image from 'next/image'
 
-import useImageLoader from './useImageLoader'
-import LazyImage from '../carousel/LazyImage'
-import { ImageResult } from '../../src/types' // Correct import path
+import useImageLoader from '../hooks/useImageLoader'
+import useIntersectionObserver from '../hooks/useIntersectionObserver'
+import { ImageResult } from '../../src/types'
 
 interface ImageGalleryProps {
     imageList: string[]
 }
 
 const ImageGallery: React.FC<ImageGalleryProps> = ({ imageList }) => {
-    const { images: imageStatuses } = useImageLoader(imageList) // Uses useImageLoader to get image statuses
+    const { images, loading } = useImageLoader(imageList)
     const [observed, setObserved] = useState<boolean[]>(
         new Array(imageList.length).fill(false)
     )
-    const imageRefs = useRef<(HTMLImageElement | null)[]>([])
 
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        const index = imageRefs.current.indexOf(
-                            entry.target as HTMLImageElement
-                        )
-                        if (index !== -1) {
-                            setObserved((prev) => {
-                                const newObserved = [...prev]
-                                newObserved[index] = true
-                                return newObserved
-                            })
-                        }
-                    }
+    useIntersectionObserver({
+        targetIds: images.map((_, index) => `image-${index}`),
+        onIntersect: (id, isIntersecting) => {
+            if (isIntersecting) {
+                const index = parseInt(id.split('-')[1], 10)
+                setObserved((prev) => {
+                    const newObserved = [...prev]
+                    newObserved[index] = true
+                    return newObserved
                 })
-            },
-            { rootMargin: '100px' }
-        )
-
-        const currentImages = imageRefs.current
-        currentImages.forEach((img) => {
-            if (img) observer.observe(img)
-        })
-
-        return () => {
-            currentImages.forEach((img) => {
-                if (img) observer.unobserve(img)
-            })
-        }
-    }, [imageList.length])
+            }
+        },
+        rootMargin: '100px',
+    })
 
     return (
         <div>
-            {imageStatuses.map((result: ImageResult, index: number) => (
-                <div
-                    key={index}
-                    style={{ position: 'relative', minHeight: '100px' }}
-                >
-                    <Suspense fallback={<div key={index}>Loading...</div>}>
-                        {result.status === 'fulfilled' && observed[index] ? (
-                            <LazyImage
-                                key={index}
-                                src={result.value || ''}
-                                alt={`Image ${index}`}
-                                placeholderSrc="path/to/placeholder.jpg"
-                                sizes="(max-width: 600px) 480px, 800px"
-                            />
-                        ) : result.status === 'rejected' ? (
-                            <p key={index}>
-                                Error loading image: {result.reason?.message}
-                            </p>
-                        ) : (
-                            <p key={index}>Loading...</p>
-                        )}
-                    </Suspense>
-                </div>
-            ))}
+            {loading ? (
+                <p>Loading...</p>
+            ) : (
+                images.map((result: ImageResult, index: number) => (
+                    <div
+                        key={
+                            result.status === 'fulfilled' &&
+                            typeof result.value === 'object'
+                                ? result.value.id
+                                : `error-${index}`
+                        }
+                        id={`image-${index}`}
+                        style={{ position: 'relative', minHeight: '100px' }}
+                    >
+                        <Suspense fallback={<div>Loading...</div>}>
+                            {result.status === 'fulfilled' &&
+                            typeof result.value === 'object' &&
+                            observed[index] ? (
+                                <Image
+                                    src={result.value.url}
+                                    alt={`Image ${index}`}
+                                    fill // Updated from layout="responsive"
+                                    style={{ objectFit: 'cover' }} // Updated from objectFit="cover"
+                                    priority // Add priority for critical images
+                                />
+                            ) : result.status === 'rejected' ? (
+                                <p>Error loading image: {result.reason.message}</p>
+                            ) : (
+                                <p>Loading...</p>
+                            )}
+                        </Suspense>
+                    </div>
+                ))
+            )}
         </div>
     )
 }
 
 export default ImageGallery
+
+

@@ -1,18 +1,25 @@
+// components/carousel/LazyImage.tsx
 import React, { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 
 interface LazyImageProps {
     src: string
     alt: string
-    placeholderSrc: string
+    placeholderSrc?: string
     sizes?: string
+    layout?: 'fill' | 'fixed' | 'intrinsic' | 'responsive'
+    priority?: boolean
+    objectFit?: 'cover' | 'contain' | 'none' | 'scale-down'
 }
 
 const LazyImage: React.FC<LazyImageProps> = ({
     src,
     alt,
-    placeholderSrc,
-    sizes,
+    placeholderSrc = '',
+    sizes = '(max-width: 600px) 480px, 800px',
+    layout = 'responsive',
+    priority = false,
+    objectFit = 'cover',
 }) => {
     const [isLoaded, setIsLoaded] = useState(false)
     const [hasError, setHasError] = useState(false)
@@ -41,7 +48,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
     }, [src])
 
     return (
-        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <div style={{ position: 'relative', width: '100%', height: '300px' }}>
             {!isLoaded && !hasError && (
                 <div
                     role="status"
@@ -85,8 +92,9 @@ const LazyImage: React.FC<LazyImageProps> = ({
                     alt={alt}
                     placeholder="blur"
                     blurDataURL={placeholderSrc}
-                    layout="fill"
-                    objectFit="cover"
+                    layout={layout}
+                    priority={priority}
+                    objectFit={objectFit}
                     sizes={sizes}
                     onLoadingComplete={() => setIsLoaded(true)}
                     onError={() => setHasError(true)}

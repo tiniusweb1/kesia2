@@ -1,0 +1,15 @@
+.imageContainer {
+  position: relative;
+  min-height: 100px;
+  width: 100%;
+  height: 300px; /* Ensure the container has a set height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.imageContainer img {
+  object-fit: cover; /* Ensure the image covers the container */
+  width: 100%;
+  height: 100%;
+}

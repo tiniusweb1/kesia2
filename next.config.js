@@ -19,3 +19,4 @@ module.exports = withBundleAnalyzer({
   // Additional Next.js configuration options can be added here
   // Example: images: { domains: ['example.com'] },
 });
+
