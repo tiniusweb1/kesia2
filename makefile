@@ -13,3 +13,7 @@ test:
 	else \
 		echo "Tests failed. Please check the log for details."; \
 	fi
+
+# Define the upload target
+upload:
+	./upload_files.sh
